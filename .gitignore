@@ -45,3 +45,5 @@ qlik/devhub.js
 qlik/engine.js
 qlik/product-info.js
 qlik/require.js
+qlik/theme.css
+qlik/workbench.js

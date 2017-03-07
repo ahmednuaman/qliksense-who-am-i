@@ -3,9 +3,9 @@
 const BUILD_DIR = 'build'
 const CWD = process.cwd()
 const ENV = process.env.NODE_ENV || 'development'
-const PKG = require('./package.json')
 const PRODUCTION = ENV === 'production'
 
+const fs = require('fs')
 const path = require('path')
 const src = path.resolve(CWD, 'src')
 const webpack = require('webpack')
@@ -16,7 +16,15 @@ const WebpackHTMLPlugin = require('html-webpack-plugin')
 const WebpackStatsWriterPlugin = require('webpack-stats-plugin').StatsWriterPlugin
 const WebpackZipPlugin = require('zip-webpack-plugin')
 
-const ZIP_FILE = `${PKG.name}.zip`
+const QEXT = JSON.parse(fs.readFileSync('./qlik/template.qext'))
+const ZIP_FILE = `${QEXT.name}.zip`
+
+const EXCLUDE = [
+  /^\..*/,
+  /\.zip/,
+  /content\//,
+  /resources\//
+]
 
 const fileLoader = (extras) => `file?limit=1000&name=[name].[ext]${extras || ''}`
 
@@ -24,11 +32,11 @@ let config = {
   context: src,
   cache: false,
   entry: {
-    [`${PKG.name}.css`]: './scss/app',
-    [`${PKG.name}.js`]: ['jquery', 'bootstrap', './js/app']
+    [`${QEXT.name}.css`]: './scss/app',
+    [`${QEXT.name}.js`]: './js/app'
   },
   output: {
-    name: PKG.name,
+    name: QEXT.name,
     filename: '[name]',
     publicPath: '',
     path: path.resolve(CWD, BUILD_DIR),
@@ -58,12 +66,15 @@ let config = {
       ],
       loader: 'babel?compact=false'
     }, {
+      test: /\.css$/,
+      loader: WebpackExtractTextPlugin.extract('style', 'css')
+    }, {
       test: /\.scss$/,
       loader: WebpackExtractTextPlugin.extract('style', 'css!sass')
     }]
   },
   resolve: {
-    extensions: ['', '.js', '.json', '.scss', '.pug', '.jpg', '.png', '.gif', '.svg'],
+    extensions: ['', '.js', '.json', '.scss', '.css', '.pug', '.jpg', '.png', '.gif', '.svg'],
     alias: {
       img: `${src}/img/`,
       pug: `${src}/pug/`
@@ -75,9 +86,10 @@ let config = {
     'js/qlik'
   ],
   plugins: [
-    new WebpackCleanPlugin([BUILD_DIR, ZIP_FILE]),
+    new WebpackCleanPlugin([BUILD_DIR]),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(ENV)
+      'process.env.NODE_ENV': JSON.stringify(ENV),
+      'QEXT': JSON.stringify(QEXT)
     }),
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.NoErrorsPlugin(),
@@ -85,18 +97,19 @@ let config = {
     new WebpackHTMLPlugin({
       inject: false,
       hash: true,
-      filename: `${PKG.name}.html`,
+      filename: `${QEXT.name}.html`,
       template: 'pug/index',
-      title: PKG.name,
+      minify: false,
+      title: QEXT.name,
       production: PRODUCTION,
       app: {
-        css: `${PKG.name}.css`,
-        js: `${PKG.name}.js`
+        css: `${QEXT.name}.css`,
+        js: `${QEXT.name}.js`
       }
     }),
     new WebpackCopyPlugin([{
       from: '../qlik/template.qext',
-      to: `${PKG.name}.qext`
+      to: `${QEXT.name}.qext`
     }, {
       from: '../qlik/preview.png'
     }])
@@ -104,31 +117,11 @@ let config = {
 }
 
 if (PRODUCTION) {
-  const exclude = [
-    /^\..*/,
-    /content\//,
-    /resources\//
-  ]
-
   config.plugins.push(
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
-      },
-      mangle: false
-    }),
-    new WebpackStatsWriterPlugin({
-      filename: 'wbfolder.wbl',
-      fields: null,
-      transform: (stats, opts) =>
-        stats.assets
-          .filter(({ name }) => !exclude.some((regex) => regex.test(name)))
-          .map(({ name }) => name).join(';\n')
-    }),
-    new WebpackZipPlugin({
-      filename: ZIP_FILE,
-      pathPrefix: PKG.name,
-      exclude
+      }
     })
   )
 
@@ -144,6 +137,9 @@ if (PRODUCTION) {
     }, {
       from: '../qlik/client.css',
       to: 'resources/css/client.css'
+    }, {
+      from: '../qlik/theme.css',
+      to: 'resources/themes/old/sense/theme.css'
     }, {
       from: '../qlik/qlik.js',
       to: 'resources/js/qlik.js'
@@ -166,6 +162,37 @@ if (PRODUCTION) {
       from: '../node_modules/jquery/dist/jquery.js',
       to: 'resources/jquery.js'
     }])
+  )
+}
+
+config.plugins.push(
+  new WebpackCopyPlugin([{
+    from: '../qlik/template.qext',
+    to: `${QEXT.name}.qext`
+  }, {
+    from: '../qlik/preview.png'
+  }, {
+    from: '../qlik/workbench.js',
+    to: `${QEXT.name}.js`
+  }]),
+  new WebpackStatsWriterPlugin({
+    filename: 'wbfolder.wbl',
+    fields: null,
+    transform: (stats, opts) =>
+      stats
+        .assets
+        .filter(({ name }) => !EXCLUDE.some((regex) => regex.test(name)))
+        .map(({ name }) => name).join(';\n')
+  })
+)
+
+if (PRODUCTION) {
+  config.plugins.push(
+    new WebpackZipPlugin({
+      filename: ZIP_FILE,
+      pathPrefix: QEXT.name,
+      EXCLUDE
+    })
   )
 }
 

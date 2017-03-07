@@ -1,5 +1,5 @@
 {
-  "name": "qliksensewhoami",
+  "name": "Who am I?",
   "description": "A little QlikSense mashup that reveals who the user is",
   "icon": "line-chart",
   "preview": "preview.png",

@@ -182,7 +182,8 @@ config.plugins.push(
       stats
         .assets
         .filter(({ name }) => !EXCLUDE.some((regex) => regex.test(name)))
-        .map(({ name }) => name).join(';\n')
+        .map(({ name }) => name)
+        .join(';\n') + ';'
   })
 )
 

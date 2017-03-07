@@ -10,10 +10,13 @@ html(lang='en')
     meta(name='apple-mobile-web-app-status-bar-style' content='#eb0000')
     meta(name='msapplication-navbutton-color' content='#eb0000')
     meta(http-equiv='cleartype' content='on')
-    link(rel='stylesheet' href='/#{htmlWebpackPlugin.files.chunks[htmlWebpackPlugin.options.app.css].entry}')
+    link(rel='stylesheet' href=`${htmlWebpackPlugin.files.chunks[htmlWebpackPlugin.options.app.css].entry}`)
     title #{htmlWebpackPlugin.options.title}
   body
-    #body
+    .container
+      .row
+        .col-xs-12
+          #user
 
     script(src='/resources/assets/external/requirejs/require.js')
     script.
@@ -28,4 +31,4 @@ html(lang='en')
         baseUrl: (config.isSecure ? 'https://' : 'http://') + config.host + (config.port ? ':' + config.port : '') + config.prefix + 'resources'
       })
 
-      require(['#{htmlWebpackPlugin.options.production ? '${name}.js' : htmlWebpackPlugin.files.chunks[htmlWebpackPlugin.options.app.js].entry}'])
+      require(['#{htmlWebpackPlugin.files.chunks[htmlWebpackPlugin.options.app.js].entry}'])

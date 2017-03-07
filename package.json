@@ -1,7 +1,7 @@
 {
-  "name": "qliksense-mashup",
+  "name": "qliksensewhoami",
   "version": "1.0.0",
-  "description": "A simple boilerplate for writing Qlik Sense mashups in Javascript",
+  "description": "A little QlikSense mashup that reveals who the user is",
   "scripts": {
     "browser-sync": "node ./browser-sync.js",
     "build": "concurrently \"npm test\" \"npm run webpack\"",
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ahmednuaman/qliksense-mashup.git"
+    "url": "git+https://github.com/ahmednuaman/qliksense-who-am-i.git"
   },
   "keywords": [
     "qliksense"
@@ -26,9 +26,9 @@
   "author": "Ahmed Nuaman (ahmed@ahmednuaman.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ahmednuaman/qliksense-mashup/issues"
+    "url": "https://github.com/ahmednuaman/qliksense-who-am-i/issues"
   },
-  "homepage": "https://github.com/ahmednuaman/qliksense-mashup#readme",
+  "homepage": "https://github.com/ahmednuaman/qliksense-who-am-i#readme",
   "devDependencies": {
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",

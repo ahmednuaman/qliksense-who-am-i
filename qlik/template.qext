@@ -1,0 +1,13 @@
+{
+  "name": "qliksense-template",
+  "description": "A simple boilerplate for writing Qlik Sense templates in Javascript",
+  "icon": "line-chart",
+  "preview": "preview.png",
+  "type": "mashup-template",
+  "version": "1.0.0",
+  "author": "Ahmed Nuaman (ahmed@ahmednuaman.com)",
+  "allowPosition": false,
+  "dependencies": {
+    "qlik-sense" : ">=1.0.x"
+  }
+}

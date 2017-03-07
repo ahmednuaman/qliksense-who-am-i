@@ -1,0 +1,20 @@
+$fa-font-path: '~font-awesome/fonts';
+$icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
+$web-font-path: './_fonts.scss';
+
+@import '~font-awesome/scss/font-awesome';
+
+@import './variables';
+@import '~bootswatch/paper/variables';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap';
+@import '~bootswatch/paper/bootswatch';
+
+a {
+  cursor: pointer;
+}
+
+.qvplaceholder,
+.qvdropzone,
+.qvobject {
+  min-height: 200px;
+}

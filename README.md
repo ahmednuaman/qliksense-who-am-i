@@ -1,2 +1,2 @@
-# qliksense-who-am-i
-A little QlikSense mashup that reveals who the user is
+# qliksense-template
+A simple boilerplate for writing Qlik Sense templates
